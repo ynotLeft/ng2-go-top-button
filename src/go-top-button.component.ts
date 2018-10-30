@@ -1,18 +1,19 @@
-import {Component, HostListener, Input, OnInit, ViewEncapsulation} from '@angular/core';
-import {trigger, state, style, transition, animate} from '@angular/animations';
+import { Component, HostListener, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
     selector: 'go-top-button',
-    template: `<button type="button" aria-label="go to top of page"
-                        [@appearInOut]="animationState"
-                        (click)="scrollTop($event)"
-                        [ngStyle]="getStyle()"
-                        [ngClass]="classNames">
-                        <ng-content></ng-content>
-                </button>`,
+    template: `
+        <button type="button" aria-label="go to top of page"
+                [@appearInOut]="animationState"
+                (click)="scrollTop($event)"
+                [ngStyle]="getStyle()"
+                [ngClass]="classNames">
+            <ng-content></ng-content>
+        </button>`,
     encapsulation: ViewEncapsulation.None,
     styles: [
-        `.go-top-button {
+            `.go-top-button {
             position: fixed;
             cursor: pointer;
             outline: none;
@@ -33,20 +34,20 @@ import {trigger, state, style, transition, animate} from '@angular/animations';
             background-color: rgba(0, 0, 0, 0.6);
             text-decoration: none;
             color: white;
-        }`
+        }`,
     ],
     animations: [
         trigger('appearInOut', [
             state('in', style({
                 'display': 'block',
-                'opacity': '0.85'
+                'opacity': '0.85',
             })),
             state('out', style({
                 'display': 'none',
-                'opacity': '0'
+                'opacity': '0',
             })),
             transition('in => out', animate('400ms ease-in-out')),
-            transition('out => in', animate('400ms ease-in-out'))
+            transition('out => in', animate('400ms ease-in-out')),
         ]),
     ],
 })
@@ -71,7 +72,7 @@ export class GoTopButton implements OnInit {
     /**
      * Classes to be applied to the button
      */
-    @Input() classNames: string = "go-top-button";
+    @Input() classNames: string = 'go-top-button';
 
     /**
      * If true scrolling to top will be animated
@@ -88,27 +89,27 @@ export class GoTopButton implements OnInit {
      */
     @Input() acceleration: number = 0;
 
-    ngOnInit(){
+    ngOnInit() {
         this.validateInputs();
     }
 
     private validateInputs() {
         const errorMessagePrefix = 'GoTopButton component input validation error: ';
 
-        if(this.scrollDistance < 0){
-            throw Error(errorMessagePrefix + "'scrollDistance' parameter must be greater or equal to 0");
+        if (this.scrollDistance < 0) {
+            throw Error(errorMessagePrefix + '\'scrollDistance\' parameter must be greater or equal to 0');
         }
 
-        if(this.speed < 1){
-            throw Error(errorMessagePrefix + "'speed' parameter must be a positive number");
+        if (this.speed < 1) {
+            throw Error(errorMessagePrefix + '\'speed\' parameter must be a positive number');
         }
 
-        if(this.acceleration < 0){
-            throw Error(errorMessagePrefix + "'acceleration' parameter must be greater or equal to 0");
+        if (this.acceleration < 0) {
+            throw Error(errorMessagePrefix + '\'acceleration\' parameter must be greater or equal to 0');
         }
 
-        if(typeof this.classNames !== "string") {
-            throw Error(errorMessagePrefix + "'classNames' parameter must be a string like 'class1 class2 class3'");
+        if (typeof this.classNames !== 'string') {
+            throw Error(errorMessagePrefix + '\'classNames\' parameter must be a string like \'class1 class2 class3\'');
         }
     };
 
@@ -117,7 +118,7 @@ export class GoTopButton implements OnInit {
      */
     @HostListener('window:scroll', [])
     onWindowScroll() {
-        if(this.isBrowser()){
+        if (this.isBrowser()) {
             this.animationState = this.getCurrentScrollTop() > this.scrollDistance ? 'in' : 'out';
         }
     };
@@ -127,7 +128,7 @@ export class GoTopButton implements OnInit {
      * @param event
      */
     scrollTop(event: any) {
-        if(!this.isBrowser()){
+        if (!this.isBrowser()) {
             return;
         }
 
@@ -143,17 +144,17 @@ export class GoTopButton implements OnInit {
      * Performs the animated scroll to top
      */
     animateScrollTop() {
-        if(this.timerID !== null) {
+        if (this.timerID !== null) {
             return;
         }
 
         let initialSpeed = this.speed;
         const that = this;
 
-        this.timerID = setInterval(function() {
+        this.timerID = setInterval(function () {
             window.scrollBy(0, -initialSpeed);
             initialSpeed = initialSpeed + that.acceleration;
-            if (that.getCurrentScrollTop() === 0){
+            if (that.getCurrentScrollTop() === 0) {
                 clearInterval(that.timerID);
                 that.timerID = null;
             }
@@ -164,19 +165,19 @@ export class GoTopButton implements OnInit {
      * Get current Y scroll position
      */
     getCurrentScrollTop() {
-        if(typeof window.scrollY !== 'undefined' && window.scrollY >= 0){
+        if (typeof window.scrollY !== 'undefined' && window.scrollY >= 0) {
             return window.scrollY;
         }
 
-        if(typeof window.pageYOffset !== 'undefined' && window.pageYOffset >= 0){
+        if (typeof window.pageYOffset !== 'undefined' && window.pageYOffset >= 0) {
             return window.pageYOffset;
         }
 
-        if(typeof document.body.scrollTop !== 'undefined' && document.body.scrollTop >= 0){
+        if (typeof document.body.scrollTop !== 'undefined' && document.body.scrollTop >= 0) {
             return document.body.scrollTop;
         }
 
-        if(typeof document.documentElement.scrollTop !== 'undefined' && document.documentElement.scrollTop >= 0){
+        if (typeof document.documentElement.scrollTop !== 'undefined' && document.documentElement.scrollTop >= 0) {
             return document.documentElement.scrollTop;
         }
 
@@ -194,7 +195,7 @@ export class GoTopButton implements OnInit {
      * This check will prevent 'window' logic to be executed
      * while executing the server rendering
      */
-    isBrowser():boolean {
+    isBrowser(): boolean {
         return typeof (window) !== 'undefined';
     };
 }
